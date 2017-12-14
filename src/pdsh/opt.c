@@ -99,6 +99,7 @@ Usage: rpdcp [-options] src [src2...] dir\n\
 -b                disable ^C status feature (batch mode)\n\
 -d                enable extra debug information from ^C status\n\
 -l user           execute remote commands as user\n\
+-k sskkeypath     ssh key file path\n\
 -t seconds        set connect timeout (default is 10 sec)\n\
 -u seconds        set command timeout (no default)\n\
 -f n              use fanout of n nodes\n\
@@ -118,7 +119,7 @@ Usage: rpdcp [-options] src [src2...] dir\n\
 #define DSH_ARGS    "S"
 #endif
 #define PCP_ARGS	"pryzZe:"
-#define GEN_ARGS	"hLNKR:M:t:cqf:w:x:l:u:bI:dVT:Q"
+#define GEN_ARGS	"hLNKR:M:t:cqf:w:x:l:k:u:bI:dVT:Q"
 
 
 /*
@@ -329,6 +330,21 @@ static void copy_username (char *dst, const char *src)
     strcpy (dst, src);
 }
 
+static int filepath_max_len(void)
+{
+    return 256;
+}
+
+static void copy_filepath(char *dst, const char *src)
+{
+    int maxlen = filepath_max_len();
+    if(strlen(src) > maxlen){
+        errx ("%p: Fatal: sshkeypath '%s' exceeds max filepath length (%d)\n",
+                src, maxlen);
+    }
+    strcpy (dst, src);
+}
+
 /*
  * Set defaults for various options.
  *	opt (IN/OUT)	option struct
@@ -340,6 +356,7 @@ void opt_default(opt_t * opt, char *argv0)
     opt->progname = xbasename(argv0);
     opt->luser = Malloc (login_name_max_len () + 1);
     opt->ruser = Malloc (login_name_max_len () + 1);
+    opt->ssh_key_path = Malloc(filepath_max_len() + 1);
 
     opt->reverse_copy = false;
 
@@ -636,6 +653,9 @@ void opt_args(opt_t * opt, int argc, char *argv[])
             break;
         case 'l':              /* specify remote username for rshd */
             copy_username (opt->ruser, optarg);
+            break;
+        case 'k':             /* ssk key file path */
+            copy_filepath(opt->ssh_key_path, optarg);
             break;
         case 'r':              /* rcp: copy recursively */
             if (pdsh_personality() == PCP)

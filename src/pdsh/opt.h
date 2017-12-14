@@ -61,6 +61,7 @@ typedef struct {
     char *luser;                /* local username */
     uid_t luid;                 /* uid for above */
     char *ruser;                /* remote username (-l or default) */
+    char *ssh_key_path;         /* -k ssh key file path */
     int fanout;                 /* (-f, FANOUT, or default) */
     int connect_timeout;
     int command_timeout;

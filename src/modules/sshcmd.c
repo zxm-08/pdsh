@@ -188,6 +188,8 @@ static int ssh_args_prepend_timeout (int timeout)
 
 static int mod_ssh_postop(opt_t *opt)
 {
+    int len = 0;
+    char *tmp = NULL;
     sshcmd_args_init ();
     ssh_args_prepend_timeout (opt->connect_timeout);
 
@@ -196,6 +198,14 @@ static int mod_ssh_postop(opt_t *opt)
      */
     if (opt->dshpath)
         list_append (ssh_args_list, Strdup (opt->dshpath));
+    if (opt->ssh_key_path){
+        len = strlen(opt->ssh_key_path) + 2;
+        tmp = Malloc(len * sizeof(char));
+        memset(tmp, 0, len);
+        sprintf(tmp, "-i%s", opt->ssh_key_path);
+        list_append(ssh_args_list, Strdup(tmp));
+        Free((void **) &tmp);
+    }
 
     return 0;
 }
