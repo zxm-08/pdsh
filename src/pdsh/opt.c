@@ -100,6 +100,7 @@ Usage: rpdcp [-options] src [src2...] dir\n\
 -d                enable extra debug information from ^C status\n\
 -l user           execute remote commands as user\n\
 -k sskkeypath     ssh key file path\n\
+-o remote port    eg: ssh port\n\
 -t seconds        set connect timeout (default is 10 sec)\n\
 -u seconds        set command timeout (no default)\n\
 -f n              use fanout of n nodes\n\
@@ -119,7 +120,7 @@ Usage: rpdcp [-options] src [src2...] dir\n\
 #define DSH_ARGS    "S"
 #endif
 #define PCP_ARGS	"pryzZe:"
-#define GEN_ARGS	"hLNKR:M:t:cqf:w:x:l:k:u:bI:dVT:Q"
+#define GEN_ARGS	"hLNKR:M:t:cqf:w:x:l:o:k:u:bI:dVT:Q"
 
 
 /*
@@ -656,6 +657,9 @@ void opt_args(opt_t * opt, int argc, char *argv[])
             break;
         case 'k':             /* ssk key file path */
             copy_filepath(opt->ssh_key_path, optarg);
+            break;
+        case 'o':
+            opt->rport = atoi(optarg);
             break;
         case 'r':              /* rcp: copy recursively */
             if (pdsh_personality() == PCP)

@@ -206,6 +206,13 @@ static int mod_ssh_postop(opt_t *opt)
         list_append(ssh_args_list, Strdup(tmp));
         Free((void **) &tmp);
     }
+    if (opt->rport > 0){
+        len = 25;
+        tmp = Malloc(len * sizeof(char));
+        sprintf(tmp, "-p%d", opt->rport);
+        list_append(ssh_args_list, Strdup(tmp));
+        Free((void **) &tmp);
+    }
 
     return 0;
 }
